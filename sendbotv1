@@ -1,0 +1,45 @@
+from web3 import Web3
+
+# Replace the following with your node's endpoint
+
+ethereum_node_endpoint = "https://x1-testnet.xen.network"
+
+# Replace with your own address and private key
+sender_address = "0xYourSenderAddress"
+private_key = "0xYourPrivateKey"
+
+# Replace with your own recipient address
+recipient_address = "0xYourRecipientAddress"
+
+# Replace with the appropriate chain ID for your network (e.g., 1 for mainnet)
+chain_id = 204005
+
+# Connect to node
+web3 = Web3(Web3.HTTPProvider(ethereum_node_endpoint))
+
+# Ensure the connection is successful
+if web3.isConnected():
+    print("Connected to node")
+else:
+    print("Failed to connect to node")
+    exit()
+
+# Repeat the transaction 10 times
+for i in range(10):
+    # Build a transaction
+    transaction = {
+        'to': recipient_address,
+        'value': web3.toWei(0.1, 'ether'),  # Sending 0 ether (or any amount you desire)
+        'gas': 21000,  # Standard gas limit for a simple transaction
+        'gasPrice': web3.toWei(20, 'gwei'),  # Replace with an appropriate gas price
+        'nonce': web3.eth.getTransactionCount(sender_address) + i,
+	'chainId': chain_id,
+    }
+
+    # Sign the transaction
+    signed_transaction = web3.eth.account.signTransaction(transaction, private_key)
+
+    # Send the transaction
+    transaction_hash = web3.eth.sendRawTransaction(signed_transaction.rawTransaction)
+
+    print(f"Transaction {i+1:>2} sent with hash: {transaction_hash.hex()}")
